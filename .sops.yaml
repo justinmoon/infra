@@ -1,0 +1,6 @@
+creation_rules:
+  - path_regex: .*/?secrets/.*\.ya?ml$
+    key_groups:
+      - age:
+          # Derived from /etc/ssh/ssh_host_ed25519_key.pub on 178.156.227.143 via ssh-to-age.
+          - age1l2lvtu9fg4m6n5wycjml8ncylpdrjmw7l6mzvmga48dkgt32u5rq87vl0z
