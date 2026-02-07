@@ -40,7 +40,7 @@
         disko.nixosModules.disko
         sops-nix.nixosModules.sops
         home-manager.nixosModules.home-manager
-        ./nix/hosts/prod.nix
+        ./nix/hosts/openclaw-prod.nix
       ];
     };
 

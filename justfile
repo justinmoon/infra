@@ -77,14 +77,14 @@ status:
     #!/usr/bin/env bash
     set -euo pipefail
     IP="${PROD_IP:-$(hc ip)}"
-    ssh -i ~/.ssh/openclaw_ed25519 "root@$IP" "systemctl --user -M openclaw@ status openclaw-gateway 2>/dev/null || true; echo '--- logs ---'; cat /tmp/openclaw/openclaw-gateway.log 2>/dev/null | tail -30"
+    ssh -i ~/.ssh/openclaw_ed25519 "root@$IP" "systemctl status openclaw-gateway --no-pager -n 30 || true"
 
 # Tail OpenClaw gateway logs on remote
 logs:
     #!/usr/bin/env bash
     set -euo pipefail
     IP="${PROD_IP:-$(hc ip)}"
-    ssh -i ~/.ssh/openclaw_ed25519 "root@$IP" "tail -f /tmp/openclaw/openclaw-gateway.log"
+    ssh -i ~/.ssh/openclaw_ed25519 "root@$IP" "journalctl -u openclaw-gateway -f"
 
 # Setup: first-time hcloud CLI configuration
 setup:

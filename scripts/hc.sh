@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# hc — Hetzner Cloud helper for openclaw-infra
+# hc — Hetzner Cloud helper for infra (OpenClaw host)
 #
 # Wraps hcloud CLI for common server lifecycle operations.
 # Server provisioning only — NixOS install is done separately via nixos-anywhere.
@@ -151,7 +151,7 @@ cmd_ip() {
 
 cmd_help() {
   cat <<EOF
-hc — Hetzner Cloud helper for openclaw-infra
+hc — Hetzner Cloud helper for infra (OpenClaw host)
 
 Usage: hc <command>
 

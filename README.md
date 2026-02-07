@@ -1,8 +1,13 @@
-# openclaw-infra
+# infra
+
+Personal NixOS infrastructure repo (multi-host, multi-app).
+
+Currently deployed:
+- `openclaw-prod` (Hetzner) running OpenClaw + `marmot-ts` over public Nostr relays.
 
 NixOS deployment for OpenClaw on Hetzner Cloud.
 
-## Quick Start
+## Quick Start (OpenClaw)
 
 ```bash
 nix develop                  # enter dev shell with hcloud, just, sops, etc.
@@ -30,7 +35,12 @@ just deploy                  # subsequent config changes
 | `just logs` | Tail gateway logs |
 | `just destroy` | Delete server |
 
-## Architecture
+## Notes
+
+- Secrets are stored in `secrets/` as **sops-encrypted** YAML. No plaintext secrets are committed.
+- This repo currently targets a single host; expect structure to evolve as more hosts/apps are added.
+
+## Architecture (OpenClaw)
 
 ```
 ┌─────────────────────────────────────────────┐
