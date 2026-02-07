@@ -61,17 +61,17 @@
     "marmotInteropLabRustSrc": {
       "flake": false,
       "locked": {
-        "lastModified": 1770478905,
-        "narHash": "sha256-Ix+elwogh6x4DfIh7XREn0/Aa1+LfMExHbsB8DceRL4=",
+        "lastModified": 1770483906,
+        "narHash": "sha256-5Itljzjr3OSyv6gYSX1XJ/wpZ+a5vA5rZO/hi8EGbZE=",
         "owner": "justinmoon",
         "repo": "marmot-interop-lab-rust",
-        "rev": "85a659b1d18c34388cb169a9b696792ef986488b",
+        "rev": "aac559f6305b5c06f63f5006b88cc1b6d38b5755",
         "type": "github"
       },
       "original": {
         "owner": "justinmoon",
         "repo": "marmot-interop-lab-rust",
-        "rev": "85a659b1d18c34388cb169a9b696792ef986488b",
+        "rev": "aac559f6305b5c06f63f5006b88cc1b6d38b5755",
         "type": "github"
       }
     },

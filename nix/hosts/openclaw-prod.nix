@@ -234,8 +234,9 @@ in {
               "wss://nos.lol"
               "wss://relay.damus.io"
             ];
-            # MVP: allow list groups by default. Set to "open" only for controlled testing.
-            groupPolicy = "allowlist";
+            # Controlled testing: accept new groups without pre-configuration so external clients
+            # (e.g. Pika) can invite the bot and receive replies.
+            groupPolicy = "open";
             autoAcceptWelcomes = true;
             sidecarCmd = "${pkgs.marmot-rust-harness}/bin/rust_harness";
           };
