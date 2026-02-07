@@ -58,6 +58,23 @@
         "type": "github"
       }
     },
+    "marmotInteropLabRustSrc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770478905,
+        "narHash": "sha256-Ix+elwogh6x4DfIh7XREn0/Aa1+LfMExHbsB8DceRL4=",
+        "owner": "justinmoon",
+        "repo": "marmot-interop-lab-rust",
+        "rev": "85a659b1d18c34388cb169a9b696792ef986488b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "justinmoon",
+        "repo": "marmot-interop-lab-rust",
+        "rev": "85a659b1d18c34388cb169a9b696792ef986488b",
+        "type": "github"
+      }
+    },
     "nix-openclaw": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -155,6 +172,7 @@
       "inputs": {
         "disko": "disko",
         "home-manager": "home-manager",
+        "marmotInteropLabRustSrc": "marmotInteropLabRustSrc",
         "nix-openclaw": "nix-openclaw",
         "nixpkgs": "nixpkgs_2",
         "openclaw-src": "openclaw-src",

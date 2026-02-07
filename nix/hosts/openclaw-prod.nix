@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, ... }:
+{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, marmotInteropRustSrc, ... }:
 
 let
   # OpenClaw gateway port (systemd user service binds here, Caddy proxies to it)
@@ -52,10 +52,53 @@ in {
         paths = toolSets.tools;
         pathsToLink = [ "/bin" ];
       };
+
+      # Marmot (Rust) sidecar binary. This is invoked by the Marmot channel plugin.
+      marmotRustHarness =
+        let
+          marmotRustSrc = final.lib.cleanSourceWith {
+            src = marmotInteropRustSrc;
+            filter = path: type:
+              let
+                p = toString path;
+                root = toString marmotInteropRustSrc + "/";
+              in
+                final.lib.any (prefix: final.lib.hasPrefix (root + prefix) p) [
+                  "Cargo.toml"
+                  "Cargo.lock"
+                  "rust-toolchain.toml"
+                  "rust_harness"
+                ];
+          };
+        in
+          final.rustPlatform.buildRustPackage {
+            pname = "marmot-rust-harness";
+            version = "0.1.0";
+            src = marmotRustSrc;
+            nativeBuildInputs = [ final.pkg-config ];
+            buildInputs = [ final.openssl ];
+            cargoLock = {
+              lockFile = marmotRustSrc + "/Cargo.lock";
+              # Git dependencies require outputHashes. Start with fake hashes; `nix build` will print the
+              # correct values to paste here.
+              outputHashes = {
+                "mdk-core-0.5.3" = "sha256-jwQRszjNHiPwLOtnvpkn2aUawc9Da0mTLFO26Wnn5q4=";
+                "mdk-sqlite-storage-0.5.1" = "sha256-jwQRszjNHiPwLOtnvpkn2aUawc9Da0mTLFO26Wnn5q4=";
+                "mdk-storage-traits-0.5.1" = "sha256-jwQRszjNHiPwLOtnvpkn2aUawc9Da0mTLFO26Wnn5q4=";
+                "openmls-0.7.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
+                "openmls_basic_credential-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
+                "openmls_memory_storage-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
+                "openmls_rust_crypto-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
+                "openmls_traits-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
+              };
+            };
+            cargoBuildFlags = [ "-p" "rust_harness" ];
+          };
     in {
       openclaw-gateway = openclawGateway;
       openclaw = openclawBundle;
       openclaw-tools = openclawTools;
+      marmot-rust-harness = marmotRustHarness;
     })
   ];
 
@@ -160,6 +203,7 @@ in {
           # Optional plugins are "bundled (disabled by default)" unless explicitly enabled.
           entries = {
             "marmot-ts" = { enabled = true; };
+            "marmot" = { enabled = true; };
           };
         };
 
@@ -181,8 +225,29 @@ in {
               "npub1zxu639qym0esxnn7rzrt48wycmfhdu3e5yvzwx7ja3t84zyc2r8qz8cx2y"
             ];
           };
+
+          "marmot" = {
+            enabled = true;
+            name = "Marmot (Rust)";
+            relays = [
+              "wss://relay.damus.io"
+              "wss://relay.primal.net"
+              "wss://nos.lol"
+            ];
+            # MVP: allow list groups by default. Set to "open" only for controlled testing.
+            groupPolicy = "allowlist";
+            autoAcceptWelcomes = true;
+            sidecarCmd = "${pkgs.marmot-rust-harness}/bin/rust_harness";
+          };
         };
       });
+      };
+
+      # Install the Marmot (Rust) OpenClaw plugin source into ~/.openclaw/extensions/marmot.
+      # OpenClaw will discover it as a "global" plugin.
+      home.file.".openclaw/extensions/marmot" = {
+        source = marmotInteropRustSrc + "/openclaw/extensions/marmot";
+        recursive = true;
       };
 
       # Minimal deterministic workspace docs.

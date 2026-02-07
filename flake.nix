@@ -26,16 +26,24 @@
       url = "github:justinmoon/openclaw/0cdfb2aab405ca392227de29dd91126df9f99528";
       flake = false;
     };
+
+    # Local Marmot Rust track (for Marmot Rust sidecar + plugin source).
+    marmotInteropLabRustSrc = {
+      url = "github:justinmoon/marmot-interop-lab-rust/85a659b1d18c34388cb169a9b696792ef986488b";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src }:
+  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, marmotInteropLabRustSrc }:
   let
     systems = [ "x86_64-linux" "aarch64-darwin" ];
-  in {
-    # NixOS server configuration
-    nixosConfigurations.openclaw-prod = nixpkgs.lib.nixosSystem {
+    openclawProd = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit nix-openclaw; openclawSrc = openclaw-src; };
+      specialArgs = {
+        inherit nix-openclaw;
+        openclawSrc = openclaw-src;
+        marmotInteropRustSrc = marmotInteropLabRustSrc;
+      };
       modules = [
         disko.nixosModules.disko
         sops-nix.nixosModules.sops
@@ -43,6 +51,12 @@
         ./nix/hosts/openclaw-prod.nix
       ];
     };
+  in {
+    # NixOS server configuration
+    nixosConfigurations.openclaw-prod = openclawProd;
+
+    # Convenience build targets (debugging / CI)
+    packages.x86_64-linux.marmot-rust-harness = openclawProd.pkgs.marmot-rust-harness;
 
     # Dev shell with deployment tools
     devShells = nixpkgs.lib.genAttrs systems (system:
