@@ -214,9 +214,9 @@ in {
             # Popular public relays (as of 2026-02-07). Keep the list small for reliability.
             # Important: some public relays reject writes or can hang requests waiting for EOSE.
             relays = [
-              "wss://relay.damus.io"
               "wss://relay.primal.net"
               "wss://nos.lol"
+              "wss://relay.damus.io"
             ];
             # Keep deterministic probes working, but restrict the agent/LLM routing surface area:
             # only allow non-deterministic DMs from the owner allowlist.
@@ -230,9 +230,9 @@ in {
             enabled = true;
             name = "Marmot (Rust)";
             relays = [
-              "wss://relay.damus.io"
               "wss://relay.primal.net"
               "wss://nos.lol"
+              "wss://relay.damus.io"
             ];
             # MVP: allow list groups by default. Set to "open" only for controlled testing.
             groupPolicy = "allowlist";
