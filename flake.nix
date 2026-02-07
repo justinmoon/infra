@@ -23,7 +23,7 @@
 
     # OpenClaw gateway source (fork with marmot-ts extension)
     openclaw-src = {
-      url = "github:justinmoon/openclaw/9b05d1849fe9fd281744b674e56fcb9496de38e5";
+      url = "github:justinmoon/openclaw/0cdfb2aab405ca392227de29dd91126df9f99528";
       flake = false;
     };
   };
