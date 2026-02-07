@@ -29,7 +29,7 @@
 
     # Local Marmot Rust track (for Marmot Rust sidecar + plugin source).
     marmotInteropLabRustSrc = {
-      url = "github:justinmoon/marmot-interop-lab-rust/b3818afd9b7a0fbf1d17aa4cf7fb4b33e404cb3e";
+      url = "github:justinmoon/marmot-interop-lab-rust/b3818af7689ad1f4ec213a473714e92aba88a62b";
       flake = false;
     };
   };
