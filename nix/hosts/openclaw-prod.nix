@@ -220,10 +220,11 @@ in {
             ];
             # Keep deterministic probes working, but restrict the agent/LLM routing surface area:
             # only allow non-deterministic DMs from the owner allowlist.
+            #
+            # For Pika interop testing, we temporarily allow any sender so new test accounts
+            # (random pubkeys) can chat the bot without having to update allowlists.
             dmPolicy = "open";
-            allowFrom = [
-              "npub1zxu639qym0esxnn7rzrt48wycmfhdu3e5yvzwx7ja3t84zyc2r8qz8cx2y"
-            ];
+            allowFrom = [];
           };
 
           "marmot" = {
