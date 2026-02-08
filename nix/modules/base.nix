@@ -7,9 +7,11 @@
     substituters = [
       "https://cache.nixos.org"
       "https://cache.garnix.io"
+      "http://100.73.239.5:5000"  # Hetzner nix cache (Tailscale-only)
     ];
     trusted-public-keys = [
       "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "hetzner-nix-cache:g8howY8l8I+SY+keoUMjm1OcXIagN065rdi8L11Fgvk="
     ];
   };
 
@@ -45,6 +47,10 @@
     # infra deploy key
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHycGqFnrf8+1dmmI9CWRaADWrXMvnKWqx0UkpIFgXv1 infra"
   ];
+
+  # Enable Tailscale for secure mesh networking.
+  # After first deploy, SSH in and run: tailscale up
+  services.tailscale.enable = true;
 
   # Firewall — SSH, HTTP, HTTPS
   networking.firewall = {
