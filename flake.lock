@@ -61,17 +61,17 @@
     "marmotInteropLabRustSrc": {
       "flake": false,
       "locked": {
-        "lastModified": 1770483906,
-        "narHash": "sha256-5Itljzjr3OSyv6gYSX1XJ/wpZ+a5vA5rZO/hi8EGbZE=",
+        "lastModified": 1770575039,
+        "narHash": "sha256-A7feYP46Cqs8H6LiyffdlK7S7F4SXwoY3uIHFvCBDu4=",
         "owner": "justinmoon",
         "repo": "marmot-interop-lab-rust",
-        "rev": "aac559f6305b5c06f63f5006b88cc1b6d38b5755",
+        "rev": "a90b916737a8905fbd96b84298c3740bf2dba4ec",
         "type": "github"
       },
       "original": {
         "owner": "justinmoon",
+        "ref": "a90b916",
         "repo": "marmot-interop-lab-rust",
-        "rev": "aac559f6305b5c06f63f5006b88cc1b6d38b5755",
         "type": "github"
       }
     },
@@ -154,17 +154,17 @@
     "openclaw-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1770476185,
-        "narHash": "sha256-vfYYkOGI7oBHUkm4I/NSSCGFY7mN/9SPRgXGuzwyLlE=",
+        "lastModified": 1770568955,
+        "narHash": "sha256-YPL4tZsW+cofh1Pv8DhxonfsncrlPU4/RvTsnisyNmw=",
         "owner": "justinmoon",
         "repo": "openclaw",
-        "rev": "0cdfb2aab405ca392227de29dd91126df9f99528",
+        "rev": "4dc532e2fd1a1228219bf3d538d43a36f9259a41",
         "type": "github"
       },
       "original": {
         "owner": "justinmoon",
         "repo": "openclaw",
-        "rev": "0cdfb2aab405ca392227de29dd91126df9f99528",
+        "rev": "4dc532e2fd1a1228219bf3d538d43a36f9259a41",
         "type": "github"
       }
     },

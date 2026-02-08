@@ -4,3 +4,5 @@ creation_rules:
       - age:
           # Derived from /etc/ssh/ssh_host_ed25519_key.pub on 178.156.227.143 via ssh-to-age.
           - age1l2lvtu9fg4m6n5wycjml8ncylpdrjmw7l6mzvmga48dkgt32u5rq87vl0z
+          # YubiKey primary (no-pin, tap-only) — allows local sops editing
+          - age1yubikey1q0zhu9e7zrj48zmnpx4fg07c0drt9f57e26uymgxa4h3fczwutzjjp5a6y5

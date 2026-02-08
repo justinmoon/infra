@@ -21,15 +21,15 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    # OpenClaw gateway source (fork with marmot-ts extension)
+    # OpenClaw gateway source (fork with marmot-ts extension + handleInboundMessage SDK fix)
     openclaw-src = {
-      url = "github:justinmoon/openclaw/0cdfb2aab405ca392227de29dd91126df9f99528";
+      url = "github:justinmoon/openclaw/4dc532e2fd1a1228219bf3d538d43a36f9259a41";
       flake = false;
     };
 
     # Local Marmot Rust track (for Marmot Rust sidecar + plugin source).
     marmotInteropLabRustSrc = {
-      url = "github:justinmoon/marmot-interop-lab-rust/aac559f6305b5c06f63f5006b88cc1b6d38b5755";
+      url = "github:justinmoon/marmot-interop-lab-rust/a90b916";
       flake = false;
     };
   };

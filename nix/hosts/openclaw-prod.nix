@@ -6,7 +6,7 @@ let
   # Computed via `nix build` on this flake when the hash mismatch is thrown.
   # Pinned hash for the forked OpenClaw gateway source (justinmoon/openclaw@9b05d1…).
   # To update: set to lib.fakeHash, build the pnpm deps derivation, then paste the "got:" hash.
-  openclawPnpmDepsHash = "sha256-/LnHjVZTqGnc6KjKF2lM7eG2Qh2j5u4x8izXTRcuqvU=";
+  openclawPnpmDepsHash = "sha256-bMIBp+PQnNxKC0BriKo/7VIg+C4TOPWb5PenQ9nSjFA=";
 in {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
@@ -15,6 +15,9 @@ in {
   ];
 
   networking.hostName = "openclaw-prod";
+
+  # Allow OpenClaw gateway access over Tailscale (no public exposure)
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ gatewayPort ];
 
   # Needed for sops-nix runtime decryption (age) and for on-server debugging (sops).
   environment.systemPackages = with pkgs; [ age sops ];
@@ -202,30 +205,27 @@ in {
           enabled = true;
           # Optional plugins are "bundled (disabled by default)" unless explicitly enabled.
           entries = {
-            "marmot-ts" = { enabled = true; };
+            # Disabled until the marmot-ts extension is deployed to ~/.openclaw/extensions/marmot-ts.
+            # The new OpenClaw version validates that referenced plugins exist on disk.
+            # "marmot-ts" = { enabled = true; };
             "marmot" = { enabled = true; };
           };
         };
 
         channels = {
-          "marmot-ts" = {
-            enabled = true;
-            name = "Marmot (MLS)";
-            # Popular public relays (as of 2026-02-07). Keep the list small for reliability.
-            # Important: some public relays reject writes or can hang requests waiting for EOSE.
-            relays = [
-              "wss://relay.primal.net"
-              "wss://nos.lol"
-              "wss://relay.damus.io"
-            ];
-            # Keep deterministic probes working, but restrict the agent/LLM routing surface area:
-            # only allow non-deterministic DMs from the owner allowlist.
-            #
-            # For Pika interop testing, we temporarily allow any sender so new test accounts
-            # (random pubkeys) can chat the bot without having to update allowlists.
-            dmPolicy = "open";
-            allowFrom = [];
-          };
+          # marmot-ts channel (TypeScript-native MLS). Disabled until the extension is deployed.
+          # Uncomment when the marmot-ts extension directory is available.
+          # "marmot-ts" = {
+          #   enabled = true;
+          #   name = "Marmot (MLS)";
+          #   relays = [
+          #     "wss://relay.primal.net"
+          #     "wss://nos.lol"
+          #     "wss://relay.damus.io"
+          #   ];
+          #   dmPolicy = "open";
+          #   allowFrom = [];
+          # };
 
           "marmot" = {
             enabled = true;
@@ -266,7 +266,10 @@ in {
         text = ''
         # SOUL.md
 
-        You are a deterministic test bot. When instructed to "reply exactly \"X\"", reply with exactly X and nothing else.
+        You are a helpful conversational assistant named Marmot Bot.
+        You communicate over the Marmot protocol (MLS-encrypted messaging over Nostr).
+        Be friendly, concise, and helpful. Answer questions, have conversations, and assist users.
+        When instructed to "reply exactly \"X\"", reply with exactly X and nothing else.
       '';
       };
       home.file.".openclaw/workspace/TOOLS.md" = {
