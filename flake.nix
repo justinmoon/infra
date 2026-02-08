@@ -27,14 +27,14 @@
       flake = false;
     };
 
-    # Local Marmot Rust track (for Marmot Rust sidecar + plugin source).
-    marmotInteropLabRustSrc = {
-      url = "github:justinmoon/marmot-interop-lab-rust/a90b916";
+    # Marmot Rust sidecar + OpenClaw extension plugin.
+    openclawMarmotSrc = {
+      url = "github:justinmoon/openclaw-marmot";
       flake = false;
     };
   };
 
-  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, marmotInteropLabRustSrc }:
+  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, openclawMarmotSrc }:
   let
     systems = [ "x86_64-linux" "aarch64-darwin" ];
     openclawProd = nixpkgs.lib.nixosSystem {
@@ -42,7 +42,7 @@
       specialArgs = {
         inherit nix-openclaw;
         openclawSrc = openclaw-src;
-        marmotInteropRustSrc = marmotInteropLabRustSrc;
+        inherit openclawMarmotSrc;
       };
       modules = [
         disko.nixosModules.disko

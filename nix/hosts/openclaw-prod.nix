@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, marmotInteropRustSrc, ... }:
+{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, openclawMarmotSrc, ... }:
 
 let
   # OpenClaw gateway port (systemd user service binds here, Caddy proxies to it)
@@ -60,11 +60,11 @@ in {
       marmotRustHarness =
         let
           marmotRustSrc = final.lib.cleanSourceWith {
-            src = marmotInteropRustSrc;
+            src = openclawMarmotSrc;
             filter = path: type:
               let
                 p = toString path;
-                root = toString marmotInteropRustSrc + "/";
+                root = toString openclawMarmotSrc + "/";
               in
                 final.lib.any (prefix: final.lib.hasPrefix (root + prefix) p) [
                   "Cargo.toml"
@@ -248,7 +248,7 @@ in {
       # Install the Marmot (Rust) OpenClaw plugin source into ~/.openclaw/extensions/marmot.
       # OpenClaw will discover it as a "global" plugin.
       home.file.".openclaw/extensions/marmot" = {
-        source = marmotInteropRustSrc + "/openclaw/extensions/marmot";
+        source = openclawMarmotSrc + "/openclaw/extensions/marmot";
         recursive = true;
       };
 

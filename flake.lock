@@ -58,23 +58,6 @@
         "type": "github"
       }
     },
-    "marmotInteropLabRustSrc": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1770575039,
-        "narHash": "sha256-A7feYP46Cqs8H6LiyffdlK7S7F4SXwoY3uIHFvCBDu4=",
-        "owner": "justinmoon",
-        "repo": "marmot-interop-lab-rust",
-        "rev": "a90b916737a8905fbd96b84298c3740bf2dba4ec",
-        "type": "github"
-      },
-      "original": {
-        "owner": "justinmoon",
-        "ref": "a90b916",
-        "repo": "marmot-interop-lab-rust",
-        "type": "github"
-      }
-    },
     "nix-openclaw": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -168,14 +151,30 @@
         "type": "github"
       }
     },
+    "openclawMarmotSrc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770575944,
+        "narHash": "sha256-XUKI6wQxZhl1WhR9c0YdcRMVHljN5PFPnU8Wayhn8XM=",
+        "owner": "justinmoon",
+        "repo": "openclaw-marmot",
+        "rev": "6c60b1e7d5a0d99e6ddcc4bb6e11f32b58dca893",
+        "type": "github"
+      },
+      "original": {
+        "owner": "justinmoon",
+        "repo": "openclaw-marmot",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
         "home-manager": "home-manager",
-        "marmotInteropLabRustSrc": "marmotInteropLabRustSrc",
         "nix-openclaw": "nix-openclaw",
         "nixpkgs": "nixpkgs_2",
         "openclaw-src": "openclaw-src",
+        "openclawMarmotSrc": "openclawMarmotSrc",
         "sops-nix": "sops-nix"
       }
     },
