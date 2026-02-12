@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# hc — Hetzner Cloud helper for infra (OpenClaw host)
+# hc — Hetzner Cloud helper for infra (Streambot host)
 #
 # Wraps hcloud CLI for common server lifecycle operations.
 # Server provisioning only — NixOS install is done separately via nixos-anywhere.
 
 set -euo pipefail
 
-SERVER_NAME="${HC_SERVER_NAME:-openclaw-prod}"
+SERVER_NAME="${HC_SERVER_NAME:-streambot}"
 SERVER_TYPE="${HC_SERVER_TYPE:-cpx21}"       # 3 vCPU, 4GB RAM, 80GB disk (AMD shared)
 LOCATION="${HC_LOCATION:-ash}"               # Ashburn, Virginia (US East)
 SSH_KEY_NAME="${HC_SSH_KEY_NAME:-default}"
-STATE_FILE="${HOME}/.hc-openclaw-current"
+STATE_FILE="${HOME}/.hc-streambot-current"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -151,7 +151,7 @@ cmd_ip() {
 
 cmd_help() {
   cat <<EOF
-hc — Hetzner Cloud helper for infra (OpenClaw host)
+hc — Hetzner Cloud helper for infra (Streambot host)
 
 Usage: hc <command>
 

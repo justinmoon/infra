@@ -1,5 +1,5 @@
 {
-  description = "OpenClaw infrastructure — Hetzner NixOS deployment";
+  description = "Streambot infrastructure — Hetzner NixOS deployment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -37,7 +37,7 @@
   outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, openclawMarmotSrc }:
   let
     systems = [ "x86_64-linux" "aarch64-darwin" ];
-    openclawProd = nixpkgs.lib.nixosSystem {
+    streambot = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = {
         inherit nix-openclaw;
@@ -48,15 +48,15 @@
         disko.nixosModules.disko
         sops-nix.nixosModules.sops
         home-manager.nixosModules.home-manager
-        ./nix/hosts/openclaw-prod.nix
+        ./nix/hosts/streambot.nix
       ];
     };
   in {
     # NixOS server configuration
-    nixosConfigurations.openclaw-prod = openclawProd;
+    nixosConfigurations.streambot = streambot;
 
     # Convenience build targets (debugging / CI)
-    packages.x86_64-linux.marmot-rust-harness = openclawProd.pkgs.marmot-rust-harness;
+    packages.x86_64-linux.marmot-rust-harness = streambot.pkgs.marmot-rust-harness;
 
     # Dev shell with deployment tools
     devShells = nixpkgs.lib.genAttrs systems (system:
@@ -80,7 +80,7 @@
             hc
           ];
           shellHook = ''
-            echo "OpenClaw Infra"
+            echo "Streambot Infra"
             echo "Commands: hc new | hc attach | hc destroy | hc list"
             echo "Deploy:   just initial-deploy | just deploy"
           '';

@@ -1,7 +1,7 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
-# Server IP (auto-detect from hc state, or override)
-PROD_IP := env_var_or_default("PROD_IP", "")
+# Streambot Tailscale IP (SSH is Tailscale-only)
+STREAMBOT_IP := env_var_or_default("STREAMBOT_IP", "100.83.137.37")
 
 # List available commands
 default:
@@ -31,11 +31,7 @@ list:
 initial-deploy:
     #!/usr/bin/env bash
     set -euo pipefail
-    IP="${PROD_IP:-$(hc ip)}"
-    if [[ -z "$IP" ]]; then
-        echo "ERROR: No server IP. Run 'just new' first or set PROD_IP."
-        exit 1
-    fi
+    IP="{{STREAMBOT_IP}}"
     echo "==> Installing NixOS on $IP via nixos-anywhere..."
     echo "    This will WIPE the server and install NixOS from scratch."
     echo ""
@@ -46,7 +42,7 @@ initial-deploy:
         exit 1
     fi
     nix run github:nix-community/nixos-anywhere -- \
-        --flake ".#openclaw-prod" \
+        --flake ".#streambot" \
         --target-host "root@$IP" \
         -i ~/.ssh/openclaw_ed25519
     echo ""
@@ -56,21 +52,16 @@ initial-deploy:
 
 # Deploy NixOS config update (no wipe, just rebuild)
 # Builds natively on Hetzner (x86_64-linux), then copies the closure
-# directly from Hetzner's nix-serve cache to prod over Tailscale.
-# Requires: prod is on Tailscale (run `tailscale up` on prod first).
+# directly from Hetzner's nix-serve cache to streambot over Tailscale.
 deploy:
     #!/usr/bin/env bash
     set -euo pipefail
-    IP="${PROD_IP:-$(hc ip)}"
-    if [[ -z "$IP" ]]; then
-        echo "ERROR: No server IP. Run 'just new' first or set PROD_IP."
-        exit 1
-    fi
+    IP="{{STREAMBOT_IP}}"
 
     HETZNER="justin@100.73.239.5"
     HETZNER_SSH_OPTS="-i $HOME/.ssh/id_ed25519_hetzner"
     PROD_SSH_OPTS="-o StrictHostKeyChecking=accept-new"
-    REMOTE_DIR="/tmp/openclaw-infra"
+    REMOTE_DIR="/tmp/streambot-infra"
     HETZNER_CACHE="http://100.73.239.5:5000"
     HETZNER_CACHE_KEY="hetzner-nix-cache:g8howY8l8I+SY+keoUMjm1OcXIagN065rdi8L11Fgvk="
 
@@ -87,7 +78,7 @@ deploy:
 
     echo "==> Step 2/4: Building on Hetzner (native x86_64-linux)..."
     SYSTEM=$(ssh $HETZNER_SSH_OPTS "$HETZNER" \
-        "cd $REMOTE_DIR && nix build .#nixosConfigurations.openclaw-prod.config.system.build.toplevel --no-link --print-out-paths")
+        "cd $REMOTE_DIR && nix build .#nixosConfigurations.streambot.config.system.build.toplevel --no-link --print-out-paths")
     echo "    Built: $SYSTEM"
 
     echo "==> Step 3/4: Copying closure from Hetzner cache to prod (Tailscale)..."
@@ -103,36 +94,26 @@ deploy:
     echo "==> Done!"
 
 # Deploy via Mac (old method, slow — copies 4.7GB closure through Mac).
-# Use this as fallback if Tailscale isn't available between Hetzner and prod.
+# Use this as fallback if Tailscale isn't available between Hetzner and streambot.
 deploy-via-mac:
     #!/usr/bin/env bash
     set -euo pipefail
-    IP="${PROD_IP:-$(hc ip)}"
-    if [[ -z "$IP" ]]; then
-        echo "ERROR: No server IP. Run 'just new' first or set PROD_IP."
-        exit 1
-    fi
+    IP="{{STREAMBOT_IP}}"
     echo "==> Deploying to $IP (via Mac, slow)..."
     NIX_SSHOPTS="-i $HOME/.ssh/openclaw_ed25519 -o StrictHostKeyChecking=accept-new" \
         nixos-rebuild switch \
-        --flake ".#openclaw-prod" \
+        --flake ".#streambot" \
         --target-host "root@$IP" \
         --sudo
     echo "==> Done!"
 
 # Show OpenClaw gateway status on remote
 status:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    IP="${PROD_IP:-$(hc ip)}"
-    ssh "root@$IP" "systemctl status openclaw-gateway --no-pager -n 30 || true"
+    ssh streambot "systemctl status openclaw-gateway --no-pager -n 30 || true"
 
 # Tail OpenClaw gateway logs on remote
 logs:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    IP="${PROD_IP:-$(hc ip)}"
-    ssh "root@$IP" "journalctl -u openclaw-gateway -f"
+    ssh streambot "journalctl -u openclaw-gateway -f"
 
 # Setup: first-time hcloud CLI configuration
 setup:
@@ -142,7 +123,7 @@ setup:
     @echo "   (Project → Security → API Tokens → Generate)"
     @echo ""
     @echo "2. Configure hcloud CLI:"
-    @echo "   hcloud context create openclaw"
+    @echo "   hcloud context create streambot"
     @echo "   # paste your API token when prompted"
     @echo ""
     @echo "3. Add your SSH key to Hetzner:"

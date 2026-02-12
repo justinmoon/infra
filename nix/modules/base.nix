@@ -30,6 +30,8 @@
   # SSH access
   services.openssh = {
     enable = true;
+    # Do not open port 22 publicly; we explicitly allow SSH only over Tailscale.
+    openFirewall = false;
     settings = {
       PermitRootLogin = "prohibit-password";
       PasswordAuthentication = false;
@@ -52,10 +54,12 @@
   # After first deploy, SSH in and run: tailscale up
   services.tailscale.enable = true;
 
-  # Firewall — SSH, HTTP, HTTPS
+  # Firewall
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 22 80 443 ];
+    # No public ingress by default. If you need access, prefer Tailscale-only rules
+    # via `networking.firewall.interfaces.tailscale0.allowed*Ports`.
+    allowedTCPPorts = [ ];
   };
 
   time.timeZone = "UTC";

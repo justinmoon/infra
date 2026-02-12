@@ -14,10 +14,10 @@ in {
     ../modules/caddy.nix
   ];
 
-  networking.hostName = "openclaw-prod";
+  networking.hostName = "streambot";
 
-  # Allow OpenClaw gateway access over Tailscale (no public exposure)
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ gatewayPort ];
+  # Tailscale-only admin access (no public SSH).
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 ];
 
   # Needed for sops-nix runtime decryption (age) and for on-server debugging (sops).
   environment.systemPackages = with pkgs; [ age sops ];
@@ -242,12 +242,14 @@ in {
             # from any other pubkey are silently dropped before reaching OpenClaw.
             # Justin (real):  npub1zxu639qym0esxnn7rzrt48wycmfhdu3e5yvzwx7ja3t84zyc2r8qz8cx2y
             # Test key:       npub1y2z0c7un9dwmhk4zrpw8df8p0gh0j2x54qhznwqjnp452ju4078srmwp70
+            # Paul:           npub1qjzr79nqfwducv4adfyg0zwl9qg4jvq9sspc8czsc0ekr8xm6ttsth5h4k
             sidecarArgs = [
               "daemon"
               "--relay" "wss://relay.primal.net"
               "--state-dir" "/home/openclaw/.openclaw/marmot/accounts/default"
               "--allow-pubkey" "11b9a894813efe60d39f8621ae9dc4c6d26de4732411c1cdf4bb15e88898a19c"
               "--allow-pubkey" "2284fc7b932b5dbbdaa2185c76a4e17a2ef928d4a82e29b812986b454b957f8f"
+              "--allow-pubkey" "04843f16604b9bcc32bd6a488789df2811593005840383e050c3f3619cdbd2d7"
             ];
           };
         };
@@ -325,6 +327,16 @@ in {
     description = "slipboxd — Slipbox vault web server";
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
+
+    # Defensive hardening: ensure slipboxd never binds to 0.0.0.0 (public or Tailscale).
+    # slipboxd's current server.ts hardcodes 0.0.0.0, so we patch it on service start.
+    preStart = ''
+      if [ -f /home/openclaw/slipboxd/server.ts ]; then
+        ${pkgs.gnused}/bin/sed -i \
+          's/server\\.listen(PORT, "0\\.0\\.0\\.0"/server.listen(PORT, "127.0.0.1"/' \
+          /home/openclaw/slipboxd/server.ts || true
+      fi
+    '';
 
     serviceConfig = {
       Type = "simple";
