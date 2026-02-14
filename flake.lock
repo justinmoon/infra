@@ -154,15 +154,16 @@
     "openclawMarmotSrc": {
       "flake": false,
       "locked": {
-        "lastModified": 1770584495,
-        "narHash": "sha256-3MRh5TZtbOtpohBxrMxNyE1kY7ejjTvIauZ6WXyuZTI=",
+        "lastModified": 1771037122,
+        "narHash": "sha256-GIZad5Z6dVNOQKKawrxbrXoJGKd9hqCRoKEcRanndYI=",
         "owner": "justinmoon",
         "repo": "openclaw-marmot",
-        "rev": "89f2a32720c61b306bf3d2df4665b7e9695f3f3e",
+        "rev": "410590ec0379543cc5a2610299ddf055282b68f4",
         "type": "github"
       },
       "original": {
         "owner": "justinmoon",
+        "ref": "audio-transport",
         "repo": "openclaw-marmot",
         "type": "github"
       }

@@ -29,7 +29,7 @@
 
     # Marmot Rust sidecar + OpenClaw extension plugin.
     openclawMarmotSrc = {
-      url = "github:justinmoon/openclaw-marmot";
+      url = "github:justinmoon/openclaw-marmot/audio-transport";
       flake = false;
     };
   };
@@ -75,6 +75,7 @@
             jq
             just
             age
+            age-plugin-yubikey
             sops
             nixos-rebuild
             hc

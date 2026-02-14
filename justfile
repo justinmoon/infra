@@ -7,6 +7,44 @@ STREAMBOT_IP := env_var_or_default("STREAMBOT_IP", "100.83.137.37")
 default:
     @just --list
 
+# Create (if missing) and edit the local OpenAI key file for streambot, encrypted via sops.
+#
+# This keeps the OpenAI key out of git history while still letting the server decrypt it at
+# activation time (using the host-key-derived age identity configured in nix/hosts/streambot.nix).
+openclaw-local-init:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p secrets
+    if [[ -f secrets/openclaw-local.yaml ]]; then
+      echo "exists: secrets/openclaw-local.yaml"
+      exit 0
+    fi
+    printf '%s\n' 'openai_api_key: ""' | sops \
+      --encrypt \
+      --input-type yaml \
+      --output-type yaml \
+      --filename-override secrets/openclaw-local.yaml \
+      /dev/stdin > secrets/openclaw-local.yaml
+    echo "created: secrets/openclaw-local.yaml"
+
+openclaw-local-edit:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export SOPS_AGE_KEY_FILE="${SOPS_AGE_KEY_FILE:-$HOME/configs/yubikeys/keys.txt}"
+    just openclaw-local-init
+    sops secrets/openclaw-local.yaml
+
+openclaw-local-upload:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ ! -f secrets/openclaw-local.yaml ]]; then
+      echo "missing secrets/openclaw-local.yaml; run: just openclaw-local-edit" >&2
+      exit 1
+    fi
+    ssh streambot "sudo install -d -m 0750 -o root -g root /etc/openclaw"
+    scp secrets/openclaw-local.yaml streambot:/tmp/openclaw-local.yaml
+    ssh streambot "sudo install -m 0640 -o root -g root /tmp/openclaw-local.yaml /etc/openclaw/openclaw-local.yaml && sudo rm -f /tmp/openclaw-local.yaml"
+
 # Get server IP (from hc state file)
 ip:
     @hc ip
