@@ -139,7 +139,7 @@ deploy-via-mac:
     IP="{{STREAMBOT_IP}}"
     echo "==> Deploying to $IP (via Mac, slow)..."
     NIX_SSHOPTS="-i $HOME/.ssh/openclaw_ed25519 -o StrictHostKeyChecking=accept-new" \
-        nixos-rebuild switch \
+        nix run nixpkgs#nixos-rebuild -- switch \
         --flake ".#streambot" \
         --target-host "root@$IP" \
         --sudo

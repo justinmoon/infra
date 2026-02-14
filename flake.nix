@@ -29,7 +29,7 @@
 
     # Marmot Rust sidecar + OpenClaw extension plugin.
     openclawMarmotSrc = {
-      url = "github:justinmoon/openclaw-marmot/audio-transport";
+      url = "github:justinmoon/openclaw-marmot/audio-2";
       flake = false;
     };
   };

@@ -201,7 +201,8 @@ in {
                 "openmls_traits-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
                 "moq-lite-0.14.0" = "sha256-CVoVjbuezyC21gl/pEnU/S/2oRaDlvn2st7WBoUnWo8=";
                 "moq-native-0.13.0" = "sha256-CVoVjbuezyC21gl/pEnU/S/2oRaDlvn2st7WBoUnWo8=";
-                "pika-media-0.1.0" = "sha256-LDGRRV4FdrQRJ4KjEVPr4e+Gx9hYpmIxTvUZiN3psE4=";
+                # Updated via deploy failure output ("got:" hash).
+                "pika-media-0.1.0" = "sha256-Sh7mumOoLthQ7oJ8tVXoY6GBdjxzpeBzcSJFaLTReug=";
               };
             };
             cargoBuildFlags = [ "-p" "marmotd" ];
@@ -265,6 +266,9 @@ in {
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    # Avoid failed activations due to pre-existing files in /home/openclaw/.openclaw.
+    # Home Manager will move aside clashing files as *.hm-bak.
+    backupFileExtension = "hm-bak";
 
     # Make nix-openclaw overlay + HM module available
     sharedModules = [
@@ -416,6 +420,15 @@ in {
         "CLAWDBOT_STATE_DIR=/home/openclaw/.openclaw"
         "OPENCLAW_CONFIG_PATH=/home/openclaw/.openclaw/openclaw.json"
         "CLAWDBOT_CONFIG_PATH=/home/openclaw/.openclaw/openclaw.json"
+        # Optional: enable a deterministic TTS greeting on call start for E2E automation.
+        # Set to empty to disable.
+        "MARMOT_CALL_START_TTS_TEXT=hello from streambot"
+        "MARMOT_CALL_START_TTS_DELAY_MS=1500"
+        # Temporary: use deterministic tone TTS (no OpenAI call) so interop can assert rx_frames>0.
+        # Disable for real voice conversations.
+        "MARMOT_TTS_FIXTURE=1"
+        # Debug: log sidecar request lifecycle (start/ok/error) at gateway level.
+        "MARMOT_SIDECAR_LOG_REQUESTS=1"
         # The gateway requires a shared secret even when bound to loopback.
         # This token is only used for local administration (the Marmot/Nostr channel
         # does not expose the token to peers).
