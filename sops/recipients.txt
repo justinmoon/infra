@@ -1,0 +1,13 @@
+# Public age recipients for infra SOPS secrets.
+#
+# This file is safe to commit. It contains only public recipients (NOT private keys, NOT YubiKey identity tokens).
+# The canonical source of truth is .sops.yaml.
+
+# YubiKey primary (tap-only)
+age1yubikey1q0zhu9e7zrj48zmnpx4fg07c0drt9f57e26uymgxa4h3fczwutzjjp5a6y5
+
+# YubiKey backup (tap-only; may require PIN once per session)
+age1yubikey1qtdv7spad78v4yhrtrts6tvv5wc80vw6mah6g64m9cr9l3ryxsf2jdx8gs9
+
+# streambot one-off age recipient (private key deployed on host at /etc/age/key.txt)
+age12s63r3d08h0r6slptuyq9srzpch3rfzq50wdxwfela5fp4nme39qmeckm7
