@@ -7,6 +7,112 @@ let
   # Pinned hash for the forked OpenClaw gateway source (justinmoon/openclaw@9b05d1…).
   # To update: set to lib.fakeHash, build the pnpm deps derivation, then paste the "got:" hash.
   openclawPnpmDepsHash = "sha256-bMIBp+PQnNxKC0BriKo/7VIg+C4TOPWb5PenQ9nSjFA=";
+
+  # OpenClaw does not automatically restart when only HM-managed config files change.
+  # Materialize the config as a Nix store path so we can wire it into restartTriggers.
+  openclawConfig = {
+    # Deterministic agent workspace (mirrors our local gateway E2E).
+    agents = {
+      defaults = {
+        workspace = "/home/openclaw/.openclaw/workspace";
+        skipBootstrap = true;
+        maxConcurrent = 1;
+      };
+      list = [
+        {
+          id = "marmot";
+          default = true;
+          workspace = "/home/openclaw/.openclaw/workspace";
+          identity = {
+            name = "Marmot Bot";
+            theme = "deterministic";
+            emoji = "";
+          };
+        }
+      ];
+    };
+
+    gateway = {
+      mode = "local";
+      port = gatewayPort;
+    };
+
+    # Prefer environment-provided Anthropic API keys over any previously stored
+    # OAuth/token profiles in the agent auth store.
+    auth = {
+      order = {
+        anthropic = [];
+      };
+    };
+
+    plugins = {
+      enabled = true;
+      # Optional plugins are "bundled (disabled by default)" unless explicitly enabled.
+      entries = {
+        # Disabled until the marmot-ts extension is deployed to ~/.openclaw/extensions/marmot-ts.
+        # The new OpenClaw version validates that referenced plugins exist on disk.
+        # "marmot-ts" = { enabled = true; };
+
+        # OpenClaw validates plugin entry config against the extension's configSchema.
+        # The Marmot extension requires `relays`, so provide it here even though the
+        # channel also has its own `channels.marmot.relays` config.
+        "marmot" = {
+          enabled = true;
+          config = {
+            relays = [
+              "wss://relay.primal.net"
+              "wss://nos.lol"
+              "wss://relay.damus.io"
+            ];
+          };
+        };
+      };
+    };
+
+    channels = {
+      # marmot-ts channel (TypeScript-native MLS). Disabled until the extension is deployed.
+      # Uncomment when the marmot-ts extension directory is available.
+      # "marmot-ts" = {
+      #   enabled = true;
+      #   name = "Marmot (MLS)";
+      #   relays = [
+      #     "wss://relay.primal.net"
+      #     "wss://nos.lol"
+      #     "wss://relay.damus.io"
+      #   ];
+      #   dmPolicy = "open";
+      #   allowFrom = [];
+      # };
+
+      "marmot" = {
+        enabled = true;
+        name = "Marmot (Rust)";
+        relays = [
+          "wss://relay.primal.net"
+          "wss://nos.lol"
+          "wss://relay.damus.io"
+        ];
+        groupPolicy = "open";
+        autoAcceptWelcomes = true;
+        sidecarCmd = "${pkgs.marmot-rust-harness}/bin/marmotd";
+        # --allow-pubkey is enforced in the Rust daemon: welcomes and messages
+        # from any other pubkey are silently dropped before reaching OpenClaw.
+        # Justin (real):  npub1zxu639qym0esxnn7rzrt48wycmfhdu3e5yvzwx7ja3t84zyc2r8qz8cx2y
+        # Test key:       npub1y2z0c7un9dwmhk4zrpw8df8p0gh0j2x54qhznwqjnp452ju4078srmwp70
+        # Paul:           npub1qjzr79nqfwducv4adfyg0zwl9qg4jvq9sspc8czsc0ekr8xm6ttsth5h4k
+        sidecarArgs = [
+          "daemon"
+          "--relay" "wss://relay.primal.net"
+          "--state-dir" "/home/openclaw/.openclaw/marmot/accounts/default"
+          "--allow-pubkey" "11b9a894813efe60d39f8621ae9dc4c6d26de4732411c1cdf4bb15e88898a19c"
+          "--allow-pubkey" "2284fc7b932b5dbbdaa2185c76a4e17a2ef928d4a82e29b812986b454b957f8f"
+          "--allow-pubkey" "04843f16604b9bcc32bd6a488789df2811593005840383e050c3f3619cdbd2d7"
+        ];
+      };
+    };
+  };
+
+  openclawConfigJson = pkgs.writeText "openclaw.json" (builtins.toJSON openclawConfig);
 in {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
@@ -179,106 +285,7 @@ in {
       # Note: OpenClaw expands "${VAR}" in config values at runtime.
       home.file.".openclaw/openclaw.json" = {
         force = true;
-        text = lib.mkForce (builtins.toJSON {
-        # Deterministic agent workspace (mirrors our local gateway E2E).
-        agents = {
-          defaults = {
-            workspace = "/home/openclaw/.openclaw/workspace";
-            skipBootstrap = true;
-            maxConcurrent = 1;
-          };
-          list = [
-            {
-              id = "marmot";
-              default = true;
-              workspace = "/home/openclaw/.openclaw/workspace";
-              identity = {
-                name = "Marmot Bot";
-                theme = "deterministic";
-                emoji = "";
-              };
-            }
-          ];
-        };
-
-        gateway = {
-          mode = "local";
-          port = gatewayPort;
-        };
-
-        # Prefer environment-provided Anthropic API keys over any previously stored
-        # OAuth/token profiles in the agent auth store.
-        auth = {
-          order = {
-            anthropic = [];
-          };
-        };
-
-        plugins = {
-          enabled = true;
-          # Optional plugins are "bundled (disabled by default)" unless explicitly enabled.
-          entries = {
-            # Disabled until the marmot-ts extension is deployed to ~/.openclaw/extensions/marmot-ts.
-            # The new OpenClaw version validates that referenced plugins exist on disk.
-            # "marmot-ts" = { enabled = true; };
-            # OpenClaw validates plugin entry config against the extension's configSchema.
-            # The Marmot extension requires `relays`, so provide it here even though the
-            # channel also has its own `channels.marmot.relays` config.
-            "marmot" = {
-              enabled = true;
-              config = {
-                relays = [
-                  "wss://relay.primal.net"
-                  "wss://nos.lol"
-                  "wss://relay.damus.io"
-                ];
-              };
-            };
-          };
-        };
-
-        channels = {
-          # marmot-ts channel (TypeScript-native MLS). Disabled until the extension is deployed.
-          # Uncomment when the marmot-ts extension directory is available.
-          # "marmot-ts" = {
-          #   enabled = true;
-          #   name = "Marmot (MLS)";
-          #   relays = [
-          #     "wss://relay.primal.net"
-          #     "wss://nos.lol"
-          #     "wss://relay.damus.io"
-          #   ];
-          #   dmPolicy = "open";
-          #   allowFrom = [];
-          # };
-
-          "marmot" = {
-            enabled = true;
-            name = "Marmot (Rust)";
-            relays = [
-              "wss://relay.primal.net"
-              "wss://nos.lol"
-              "wss://relay.damus.io"
-            ];
-            groupPolicy = "open";
-            autoAcceptWelcomes = true;
-            sidecarCmd = "${pkgs.marmot-rust-harness}/bin/marmotd";
-            # --allow-pubkey is enforced in the Rust daemon: welcomes and messages
-            # from any other pubkey are silently dropped before reaching OpenClaw.
-            # Justin (real):  npub1zxu639qym0esxnn7rzrt48wycmfhdu3e5yvzwx7ja3t84zyc2r8qz8cx2y
-            # Test key:       npub1y2z0c7un9dwmhk4zrpw8df8p0gh0j2x54qhznwqjnp452ju4078srmwp70
-            # Paul:           npub1qjzr79nqfwducv4adfyg0zwl9qg4jvq9sspc8czsc0ekr8xm6ttsth5h4k
-            sidecarArgs = [
-              "daemon"
-              "--relay" "wss://relay.primal.net"
-              "--state-dir" "/home/openclaw/.openclaw/marmot/accounts/default"
-              "--allow-pubkey" "11b9a894813efe60d39f8621ae9dc4c6d26de4732411c1cdf4bb15e88898a19c"
-              "--allow-pubkey" "2284fc7b932b5dbbdaa2185c76a4e17a2ef928d4a82e29b812986b454b957f8f"
-              "--allow-pubkey" "04843f16604b9bcc32bd6a488789df2811593005840383e050c3f3619cdbd2d7"
-            ];
-          };
-        };
-      });
+        source = openclawConfigJson;
       };
 
       # Install the Marmot (Rust) OpenClaw plugin source into ~/.openclaw/extensions/marmot.
@@ -379,8 +386,15 @@ in {
   systemd.services.openclaw-gateway = {
     description = "OpenClaw gateway (OpenClaw user)";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" "sops-nix.service" ];
-    wants = [ "network-online.target" "sops-nix.service" ];
+    after = [ "network-online.target" "sops-nix.service" "home-manager-openclaw.service" ];
+    wants = [ "network-online.target" "sops-nix.service" "home-manager-openclaw.service" ];
+
+    # Restart on deploy when the OpenClaw config/extension or env template changes.
+    restartTriggers = [
+      openclawConfigJson
+      openclawMarmotSrc
+      config.sops.templates."openclaw-env".path
+    ];
 
     preStart = ''
       if [ -d /home/openclaw/.openclaw/channels ]; then
