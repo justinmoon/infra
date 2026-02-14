@@ -154,11 +154,11 @@
     "openclawMarmotSrc": {
       "flake": false,
       "locked": {
-        "lastModified": 1771102268,
-        "narHash": "sha256-cfPPpKXXUqe0HfGwTVT7iY7ucSV9/def6hzIOOxqHEE=",
+        "lastModified": 1771102604,
+        "narHash": "sha256-MX42N29kPF70mrenPQt7HB9bZ1Ish7Kik731bgX5sN8=",
         "owner": "justinmoon",
         "repo": "openclaw-marmot",
-        "rev": "33d65680d643853e5b2bd8d0c4f912fae0e5b56b",
+        "rev": "75910439cd5341a1b51b8680c556378a2b7b7030",
         "type": "github"
       },
       "original": {
