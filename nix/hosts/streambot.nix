@@ -221,7 +221,19 @@ in {
             # Disabled until the marmot-ts extension is deployed to ~/.openclaw/extensions/marmot-ts.
             # The new OpenClaw version validates that referenced plugins exist on disk.
             # "marmot-ts" = { enabled = true; };
-            "marmot" = { enabled = true; };
+            # OpenClaw validates plugin entry config against the extension's configSchema.
+            # The Marmot extension requires `relays`, so provide it here even though the
+            # channel also has its own `channels.marmot.relays` config.
+            "marmot" = {
+              enabled = true;
+              config = {
+                relays = [
+                  "wss://relay.primal.net"
+                  "wss://nos.lol"
+                  "wss://relay.damus.io"
+                ];
+              };
+            };
           };
         };
 
