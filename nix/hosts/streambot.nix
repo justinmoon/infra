@@ -202,7 +202,7 @@ in {
                 "moq-lite-0.14.0" = "sha256-CVoVjbuezyC21gl/pEnU/S/2oRaDlvn2st7WBoUnWo8=";
                 "moq-native-0.13.0" = "sha256-CVoVjbuezyC21gl/pEnU/S/2oRaDlvn2st7WBoUnWo8=";
                 # Updated via deploy failure output ("got:" hash).
-                "pika-media-0.1.0" = "sha256-Sh7mumOoLthQ7oJ8tVXoY6GBdjxzpeBzcSJFaLTReug=";
+                "pika-media-0.1.0" = "sha256-yt2eU9LttOimfvCTmADxVDeckZsQbMqWsZuEE94ETFE=";
               };
             };
             cargoBuildFlags = [ "-p" "marmotd" ];
@@ -424,9 +424,9 @@ in {
         # Set to empty to disable.
         "MARMOT_CALL_START_TTS_TEXT=hello from streambot"
         "MARMOT_CALL_START_TTS_DELAY_MS=1500"
-        # Temporary: use deterministic tone TTS (no OpenAI call) so interop can assert rx_frames>0.
-        # Disable for real voice conversations.
-        "MARMOT_TTS_FIXTURE=1"
+        # Real OpenAI STT/TTS for voice calls (requires OPENAI_API_KEY in env file).
+        # Set MARMOT_TTS_FIXTURE=1 to fall back to deterministic tone without OpenAI.
+        # "MARMOT_TTS_FIXTURE=1"
         # Debug: log sidecar request lifecycle (start/ok/error) at gateway level.
         "MARMOT_SIDECAR_LOG_REQUESTS=1"
         # The gateway requires a shared secret even when bound to loopback.
