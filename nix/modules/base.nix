@@ -7,10 +7,12 @@
     substituters = [
       "https://cache.nixos.org"
       "https://cache.garnix.io"
+      "https://kixelated.cachix.org"
       "http://100.73.239.5:5000"  # Hetzner nix cache (Tailscale-only)
     ];
     trusted-public-keys = [
       "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "kixelated.cachix.org-1:CmFcV0lyM6KuVM2m9mih0q4SrAa0XyCsiM7GHrz3KKk="
       "hetzner-nix-cache:g8howY8l8I+SY+keoUMjm1OcXIagN065rdi8L11Fgvk="
     ];
   };

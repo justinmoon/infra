@@ -32,11 +32,29 @@
       url = "github:justinmoon/openclaw-marmot/audio-2";
       flake = false;
     };
+
+    # Media over QUIC relay
+    moq = {
+      url = "github:kixelated/moq";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, openclawMarmotSrc }:
+  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, openclawMarmotSrc, moq }:
   let
     systems = [ "x86_64-linux" "aarch64-darwin" ];
+
+    # MoQ relay factory — lightweight single-purpose relay VPS.
+    mkRelay = { hostname, domain }: nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit moq; };
+      modules = [
+        disko.nixosModules.disko
+        moq.nixosModules.moq-relay
+        (import ./nix/hosts/relay.nix { inherit hostname domain; })
+      ];
+    };
+
     streambot = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = {
@@ -54,6 +72,12 @@
   in {
     # NixOS server configuration
     nixosConfigurations.streambot = streambot;
+
+    # MoQ relay edge nodes
+    nixosConfigurations.relay-ash = mkRelay { hostname = "relay-ash"; domain = "us-east.moq.logos.surf"; };
+    nixosConfigurations.relay-hil = mkRelay { hostname = "relay-hil"; domain = "us-west.moq.logos.surf"; };
+    nixosConfigurations.relay-fsn = mkRelay { hostname = "relay-fsn"; domain = "germany.moq.logos.surf"; };
+    nixosConfigurations.relay-sin = mkRelay { hostname = "relay-sin"; domain = "singapore.moq.logos.surf"; };
 
     # Convenience build targets (debugging / CI)
     packages.x86_64-linux.marmot-rust-harness = streambot.pkgs.marmot-rust-harness;
