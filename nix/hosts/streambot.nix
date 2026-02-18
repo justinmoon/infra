@@ -106,7 +106,7 @@ let
           "--relay" "wss://nos.lol"
           "--relay" "wss://relay.damus.io"
           "--state-dir" "/home/openclaw/.openclaw/marmot/accounts/default"
-          "--allow-pubkey" "11b9a894813efe60d39f8621ae9dc4c6d26de4732411c1cdf4bb15e88898a19c"
+          "--allow-pubkey" "11b9a89404dbf3034e7e1886ba9dc4c6d376f239a118271bd2ec567a889850ce"
           "--allow-pubkey" "2284fc7b932b5dbbdaa2185c76a4e17a2ef928d4a82e29b812986b454b957f8f"
           "--allow-pubkey" "04843f16604b9bcc32bd6a488789df2811593005840383e050c3f3619cdbd2d7"
         ];
