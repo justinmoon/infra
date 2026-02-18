@@ -103,6 +103,9 @@ let
           "--relay" "wss://nos.lol"
           "--relay" "wss://relay.damus.io"
           "--state-dir" "/home/openclaw/.openclaw/marmot/accounts/default"
+          "--allow-pubkey" "11b9a89404dbf3034e7e1886ba9dc4c6d376f239a118271bd2ec567a889850ce"
+          "--allow-pubkey" "2284fc7b932b5dbbdaa2185c76a4e17a2ef928d4a82e29b812986b454b957f8f"
+          "--allow-pubkey" "04843f16604b9bcc32bd6a488789df2811593005840383e050c3f3619cdbd2d7"
         ];
       };
     };
@@ -274,62 +277,12 @@ in {
         recursive = true;
       };
 
-      # Workspace identity files for the Marmot agent.
-      home.file.".openclaw/workspace/AGENTS.md" = {
-        force = true;
-        text = ''
-          # Agents
+      home.file.".openclaw/workspace/AGENTS.md" = { force = true; text = ""; };
+      home.file.".openclaw/workspace/SOUL.md"   = { force = true; text = ""; };
+      home.file.".openclaw/workspace/TOOLS.md"  = { force = true; text = ""; };
+      home.file.".openclaw/workspace/IDENTITY.md" = { force = true; text = ""; };
+      home.file.".openclaw/workspace/USER.md"   = { force = true; text = ""; };
 
-          This workspace is shared by the OpenClaw agent (Marmot Bot) and Pi.
-          Both agents can read and write to the slipbox vault at /home/openclaw/slipbox/.
-        '';
-      };
-      home.file.".openclaw/workspace/SOUL.md" = {
-        force = true;
-        text = ''
-          # Soul
-
-          You are Justin's personal knowledge assistant. You help manage a zettelkasten
-          (slipbox) of 4000+ notes on history, philosophy, technology, politics, and more.
-
-          You communicate over the Marmot protocol (MLS-encrypted messaging over Nostr).
-
-          Be concise, thoughtful, and direct. When the user shares an idea, help them
-          articulate it and save it as a note. When asked to find connections between
-          ideas, search broadly and think carefully before responding.
-        '';
-      };
-      home.file.".openclaw/workspace/TOOLS.md" = {
-        force = true;
-        text = ''
-          # Tools
-
-          Standard coding agent tools (bash, read, write, edit) are available.
-          See the slipbox skill for API-based note management via slipboxd.
-        '';
-      };
-      home.file.".openclaw/workspace/IDENTITY.md" = {
-        force = true;
-        text = ''
-          # Identity
-
-          - Name: Marmot Bot
-          - Role: Personal knowledge assistant
-          - Owner: Justin
-        '';
-      };
-      home.file.".openclaw/workspace/USER.md" = {
-        force = true;
-        text = ''
-          # User
-
-          - Name: Justin
-          - Interests: History (Rome, Japan, early America), philosophy, technology,
-            political economy, Austrian economics, health/nutrition, programming
-          - Style: Prefers concise, direct communication. Appreciates atomic notes
-            (one idea per note) in the zettelkasten tradition.
-        '';
-      };
     };
   };
 
