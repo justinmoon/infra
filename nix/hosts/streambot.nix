@@ -97,18 +97,12 @@ let
         sidecarCmd = "${pkgs.marmot-rust-harness}/bin/marmotd";
         # --allow-pubkey is enforced in the Rust daemon: welcomes and messages
         # from any other pubkey are silently dropped before reaching OpenClaw.
-        # Justin (real):  npub1zxu639qym0esxnn7rzrt48wycmfhdu3e5yvzwx7ja3t84zyc2r8qz8cx2y
-        # Test key:       npub1y2z0c7un9dwmhk4zrpw8df8p0gh0j2x54qhznwqjnp452ju4078srmwp70
-        # Paul:           npub1qjzr79nqfwducv4adfyg0zwl9qg4jvq9sspc8czsc0ekr8xm6ttsth5h4k
         sidecarArgs = [
           "daemon"
           "--relay" "wss://relay.primal.net"
           "--relay" "wss://nos.lol"
           "--relay" "wss://relay.damus.io"
           "--state-dir" "/home/openclaw/.openclaw/marmot/accounts/default"
-          "--allow-pubkey" "11b9a89404dbf3034e7e1886ba9dc4c6d376f239a118271bd2ec567a889850ce"
-          "--allow-pubkey" "2284fc7b932b5dbbdaa2185c76a4e17a2ef928d4a82e29b812986b454b957f8f"
-          "--allow-pubkey" "04843f16604b9bcc32bd6a488789df2811593005840383e050c3f3619cdbd2d7"
         ];
       };
     };
