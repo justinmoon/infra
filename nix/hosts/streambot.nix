@@ -125,7 +125,8 @@ in {
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 ];
 
   # Needed for sops-nix runtime decryption (age) and for on-server debugging (sops).
-  environment.systemPackages = with pkgs; [ age sops ];
+  # nixos-rebuild is included so config updates can be applied directly from the VPS.
+  environment.systemPackages = with pkgs; [ age sops nixos-rebuild ];
 
   # Make nix-openclaw packages available system-wide (needed for HM module defaults)
   nixpkgs.overlays = [
@@ -231,6 +232,46 @@ in {
       OPENAI_API_KEY=${config.sops.placeholder."openclaw/openai_api_key"}
     '';
   };
+
+  # ── Nix remote builder (Hetzner) ─────────────────────────────────────
+  # Allows `nixos-rebuild switch --flake .#streambot` to run on streambot itself
+  # while delegating compilation to the Hetzner dedicated server over Tailscale.
+  #
+  # One-time setup (run on your Mac):
+  #   1. ssh-keygen -t ed25519 -f /tmp/streambot-hetzner -C streambot-hetzner -N ""
+  #   2. sops secrets/hetzner-builder.yaml
+  #      → add: hetzner_builder_ssh_key: "<contents of /tmp/streambot-hetzner>"
+  #   3. Add /tmp/streambot-hetzner.pub to ~/configs/hosts/hetzner/configuration.nix
+  #      under users.users.justin.openssh.authorizedKeys.keys
+  #   4. just deploy  (deploys streambot.nix changes + SOPS secret)
+  #   5. just relay-deploy hetzner (or nixos-rebuild on configs repo for Hetzner)
+  sops.secrets."hetzner-builder-key" = {
+    sopsFile = ../../secrets/hetzner-builder.yaml;
+    format = "yaml";
+    key = "hetzner_builder_ssh_key";
+    owner = "root";
+    group = "root";
+    mode = "0400";
+  };
+
+  nix.distributedBuilds = true;
+  nix.settings.builders-use-substitutes = true;
+  nix.buildMachines = [{
+    hostName = "100.73.239.5";
+    system = "x86_64-linux";
+    sshUser = "justin";
+    sshKey = config.sops.secrets."hetzner-builder-key".path;
+    maxJobs = 4;
+    speedFactor = 2;
+    supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+  }];
+
+  # Allow nix daemon's SSH to auto-accept Hetzner's host key on first connection.
+  programs.ssh.extraConfig = ''
+    Host 100.73.239.5
+      StrictHostKeyChecking accept-new
+      User justin
+  '';
 
   # ── OpenClaw user ─────────────────────────────────────────────────────
   users.users.openclaw = {
