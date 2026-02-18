@@ -224,6 +224,23 @@
         "type": "github"
       }
     },
+    "pikaSrc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771442742,
+        "narHash": "sha256-y83+toA+i4Fy+6oQo/ENDS69m8c8JhS06CTmzzgi/Wo=",
+        "owner": "sledtools",
+        "repo": "pika",
+        "rev": "d3f521fe4c25224e307971e2ecb65b31bd78e5d4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sledtools",
+        "ref": "master",
+        "repo": "pika",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
@@ -233,6 +250,7 @@
         "nixpkgs": "nixpkgs_2",
         "openclaw-src": "openclaw-src",
         "openclawMarmotSrc": "openclawMarmotSrc",
+        "pikaSrc": "pikaSrc",
         "sops-nix": "sops-nix"
       }
     },

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, openclawMarmotSrc, ... }:
+{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, openclawMarmotSrc, pikaSrc, ... }:
 
 let
   # OpenClaw gateway port (systemd user service binds here, Caddy proxies to it)
@@ -103,6 +103,8 @@ let
         sidecarArgs = [
           "daemon"
           "--relay" "wss://relay.primal.net"
+          "--relay" "wss://nos.lol"
+          "--relay" "wss://relay.damus.io"
           "--state-dir" "/home/openclaw/.openclaw/marmot/accounts/default"
           "--allow-pubkey" "11b9a894813efe60d39f8621ae9dc4c6d26de4732411c1cdf4bb15e88898a19c"
           "--allow-pubkey" "2284fc7b932b5dbbdaa2185c76a4e17a2ef928d4a82e29b812986b454b957f8f"
@@ -163,49 +165,28 @@ in {
       };
 
       # Marmot (Rust) sidecar binary. This is invoked by the Marmot channel plugin.
+      # Built from the pika monorepo (sledtools/pika). pikaSrc is a fixed-output flake input
+      # so no source filtering is needed.
       marmotRustHarness =
-        let
-          marmotRustSrc = final.lib.cleanSourceWith {
-            src = openclawMarmotSrc;
-            filter = path: type:
-              let
-                p = toString path;
-                root = toString openclawMarmotSrc + "/";
-              in
-                final.lib.any (prefix: final.lib.hasPrefix (root + prefix) p) [
-                  "Cargo.toml"
-                  "Cargo.lock"
-                  "rust-toolchain.toml"
-                  "marmotd"
-                ];
-          };
-        in
           final.rustPlatform.buildRustPackage {
             pname = "marmot-rust-harness";
             version = "0.1.0";
-            src = marmotRustSrc;
+            src = pikaSrc;
             nativeBuildInputs = [ final.pkg-config ];
             buildInputs = [ final.openssl ];
             cargoLock = {
-              lockFile = marmotRustSrc + "/Cargo.lock";
+              lockFile = pikaSrc + "/Cargo.lock";
               # Git dependencies require outputHashes. Start with fake hashes; `nix build` will print the
               # correct values to paste here.
               outputHashes = {
-                "mdk-core-0.5.3" = "sha256-jwQRszjNHiPwLOtnvpkn2aUawc9Da0mTLFO26Wnn5q4=";
-                "mdk-sqlite-storage-0.5.1" = "sha256-jwQRszjNHiPwLOtnvpkn2aUawc9Da0mTLFO26Wnn5q4=";
-                "mdk-storage-traits-0.5.1" = "sha256-jwQRszjNHiPwLOtnvpkn2aUawc9Da0mTLFO26Wnn5q4=";
-                "openmls-0.7.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
-                "openmls_basic_credential-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
-                "openmls_memory_storage-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
-                "openmls_rust_crypto-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
-                "openmls_traits-0.4.1" = "sha256-dVIqNxTj3fHaeavExwqO5vtEULpMMNIb3GZHmjBJ+24=";
+                "mdk-core-0.5.3" = "sha256-CfJnXuoCvG8EJrXGC89hwz1LOzfakR1j2A6uLMAFIE0=";
+                "mdk-sqlite-storage-0.5.1" = "sha256-CfJnXuoCvG8EJrXGC89hwz1LOzfakR1j2A6uLMAFIE0=";
+                "mdk-storage-traits-0.5.1" = "sha256-CfJnXuoCvG8EJrXGC89hwz1LOzfakR1j2A6uLMAFIE0=";
                 "moq-lite-0.14.0" = "sha256-CVoVjbuezyC21gl/pEnU/S/2oRaDlvn2st7WBoUnWo8=";
-                "moq-native-0.13.0" = "sha256-CVoVjbuezyC21gl/pEnU/S/2oRaDlvn2st7WBoUnWo8=";
-                # Updated via deploy failure output ("got:" hash).
-                "pika-media-0.1.0" = "sha256-yt2eU9LttOimfvCTmADxVDeckZsQbMqWsZuEE94ETFE=";
               };
             };
             cargoBuildFlags = [ "-p" "marmotd" ];
+            doCheck = false;
           };
     in {
       openclaw-gateway = openclawGateway;

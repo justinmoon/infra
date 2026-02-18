@@ -27,9 +27,15 @@
       flake = false;
     };
 
-    # Marmot Rust sidecar + OpenClaw extension plugin.
+    # Marmot OpenClaw extension plugin (archived; extension files only).
     openclawMarmotSrc = {
       url = "github:justinmoon/openclaw-marmot/audio-2";
+      flake = false;
+    };
+
+    # Pika monorepo — source for the marmotd Rust sidecar binary.
+    pikaSrc = {
+      url = "github:sledtools/pika/master";
       flake = false;
     };
 
@@ -40,7 +46,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, openclawMarmotSrc, moq }:
+  outputs = { self, nixpkgs, disko, sops-nix, home-manager, nix-openclaw, openclaw-src, openclawMarmotSrc, pikaSrc, moq }:
   let
     systems = [ "x86_64-linux" "aarch64-darwin" ];
 
@@ -61,6 +67,7 @@
         inherit nix-openclaw;
         openclawSrc = openclaw-src;
         inherit openclawMarmotSrc;
+        inherit pikaSrc;
       };
       modules = [
         disko.nixosModules.disko
