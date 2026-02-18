@@ -153,6 +153,10 @@ status:
 logs:
     ssh streambot "journalctl -u openclaw-gateway -f"
 
+# Forward OpenClaw dashboard to localhost:18789
+tunnel:
+    ssh -N -L 18789:127.0.0.1:18789 openclaw@streambot
+
 # ── MoQ Relay Fleet ─────────────────────────────────────────────────────
 
 # Relay server definitions: name → hetzner location
