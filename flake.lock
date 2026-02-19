@@ -207,23 +207,6 @@
         "type": "github"
       }
     },
-    "openclawMarmotSrc": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1771107884,
-        "narHash": "sha256-p8dchubhM1P9kYieBlE2i/uVcDFBuBoVbp74CBCw63M=",
-        "owner": "justinmoon",
-        "repo": "openclaw-marmot",
-        "rev": "d0c7e8708c5629e4dc6957ab4917f0471fc6a5af",
-        "type": "github"
-      },
-      "original": {
-        "owner": "justinmoon",
-        "ref": "audio-2",
-        "repo": "openclaw-marmot",
-        "type": "github"
-      }
-    },
     "pikaSrc": {
       "flake": false,
       "locked": {
@@ -249,7 +232,6 @@
         "nix-openclaw": "nix-openclaw",
         "nixpkgs": "nixpkgs_2",
         "openclaw-src": "openclaw-src",
-        "openclawMarmotSrc": "openclawMarmotSrc",
         "pikaSrc": "pikaSrc",
         "sops-nix": "sops-nix"
       }

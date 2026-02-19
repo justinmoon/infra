@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, openclawMarmotSrc, pikaSrc, ... }:
+{ config, lib, pkgs, modulesPath, nix-openclaw, openclawSrc, pikaSrc, ... }:
 
 let
   # OpenClaw gateway port (systemd user service binds here, Caddy proxies to it)
@@ -311,10 +311,10 @@ in {
         source = openclawConfigJson;
       };
 
-      # Install the Marmot (Rust) OpenClaw plugin source into ~/.openclaw/extensions/marmot.
+      # Install the Marmot OpenClaw plugin source into ~/.openclaw/extensions/marmot.
       # OpenClaw will discover it as a "global" plugin.
       home.file.".openclaw/extensions/marmot" = {
-        source = openclawMarmotSrc + "/openclaw/extensions/marmot";
+        source = pikaSrc + "/openclaw-marmot/openclaw/extensions/marmot";
         recursive = true;
       };
 
@@ -365,7 +365,7 @@ in {
     # Restart on deploy when the OpenClaw config/extension or env template changes.
     restartTriggers = [
       openclawConfigJson
-      openclawMarmotSrc
+      pikaSrc
       config.sops.templates."openclaw-env".path
     ];
 
