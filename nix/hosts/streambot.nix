@@ -281,6 +281,15 @@ in {
     openssh.authorizedKeys.keys = config.users.users.root.openssh.authorizedKeys.keys;
   };
 
+  # Allow openclaw user to run nixos-rebuild without password (for local config updates)
+  security.sudo.extraRules = [{
+    users = [ "openclaw" ];
+    commands = [{
+      command = "/run/current-system/sw/bin/nixos-rebuild";
+      options = [ "NOPASSWD" ];
+    }];
+  }];
+
   # ── Home Manager (OpenClaw gateway via nix-openclaw) ──────────────────
   home-manager = {
     useGlobalPkgs = true;
@@ -296,6 +305,7 @@ in {
 
     users.openclaw = { pkgs, ... }: {
       home.stateVersion = "24.11";
+      home.packages = [ pkgs.openclaw-gateway ];
 
       # We manage the full OpenClaw config JSON (including the custom marmot-ts channel plugin)
       # ourselves. The nix-openclaw Home Manager module's typed config emitter would overwrite it.
